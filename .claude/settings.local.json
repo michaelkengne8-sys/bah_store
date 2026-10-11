@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"const l = require\\('lucide-react'\\); const k = Object.keys\\(l\\).filter\\(x => /twitter|github|facebook|instagram|youtube|tiktok|linkedin/i.test\\(x\\)\\); console.log\\(k.join\\('\\\\n'\\)\\)\")",
+      "WebFetch(domain:localhost)",
+      "Bash(curl -s http://localhost:5174)",
+      "Bash(curl -s http://localhost:5174/src/main.jsx)",
+      "Bash(curl -s http://localhost:5174/src/pages/Home.jsx)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5175)",
+      "Bash(curl -s http://localhost:5177)",
+      "Bash(dir srccontext *)",
+      "Bash(dir src\\\\context *)",
+      "Bash(curl -s http://localhost:5180)",
+      "Bash(curl -s http://localhost:5180/src/App.jsx)",
+      "PowerShell(npm run *)",
+      "PowerShell(npx vite build 2>&1)",
+      "Bash(npm list *)",
+      "Bash(npm install *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Skill(run)",
+      "Bash(curl -s http://localhost:5173/src/main.jsx)",
+      "Bash(curl -s http://localhost:5173/src/App.jsx)",
+      "Bash(curl -s \"http://localhost:5173/src/components/Navbar.jsx\")"
+    ]
+  }
+}

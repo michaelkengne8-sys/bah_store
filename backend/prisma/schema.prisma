@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  passwordHash     String
+  name             String
+  role             String    @default("USER")
+  avatar           String?
+  phone            String?
+  emailVerified    Boolean   @default(false)
+  emailVerificationToken String?
+  emailVerificationTokenExpiresAt DateTime?
+  otpHash          String?
+  otpExpiresAt     DateTime?
+  otpAttempts      Int       @default(0)
+  loyaltyTier      String    @default("BRONZE")
+  loyaltyPoints    Int       @default(0)
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorSecret  String?
+  backupCodes      String    @default("[]")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  orders           Order[]
+  sessions         Session[]
+  addresses        Address[]
+  reviews          Review[]
+  cashoutRequests  CashoutRequest[]
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token       String   @unique
+  refreshToken String?
+  device      String?
+  ip          String?
+  location    String?
+  lastActive  DateTime @default(now())
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  tagline     String?
+  description String?
+  image       String?
+  count       Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id             String    @id @default(cuid())
+  title          String
+  slug           String    @unique
+  description    String
+  price          Float
+  originalPrice  Float?
+  images         String    @default("[]")
+  hoverImages    String    @default("[]")
+  rating         Float     @default(0)
+  reviewsCount   Int       @default(0)
+  badge          String?
+  stock          String    @default("IN_STOCK")
+  colors         String    @default("[]")
+  brand          String?
+  categoryId     String
+  category       Category  @relation(fields: [categoryId], references: [id])
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  orderItems     OrderItem[]
+  reviews        Review[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  orderNumber     String      @unique
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  status          String      @default("PENDING")
+  subtotal        Float
+  shipping        Float
+  discount        Float
+  tax             Float
+  total           Float
+  shippingAddress String      @default("{}")
+  paymentInfo     String      @default("{}")
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+  color     String
+}
+
+model CashoutRequest {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  amount          Float
+  currency        String      @default("USD")
+  paymentMethod   String
+  paymentDetails  String      @default("{}")
+  status          String      @default("PENDING")
+  transactionId   String?
+  adminNotes      String?
+  requestedAt     DateTime    @default(now())
+  processedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rating    Int
+  title     String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+model Address {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  email        String
+  phone        String
+  address      String
+  apartment    String?
+  city         String
+  state        String
+  zip          String
+  country      String
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SEOSettings {
+  id             String   @id @default(cuid())
+  page           String   @unique
+  title          String?
+  description    String?
+  keywords       String?
+  ogTitle        String?
+  ogDescription  String?
+  ogImage        String?
+  twitterCard    String?
+  structuredData String?
+  updatedAt      DateTime @updatedAt
+}
+
+model SiteSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
